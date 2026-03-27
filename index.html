@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPMS – End-to-End Proposal Lifecycle | Government of India</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Syne:wght@400;500;600;700;800&display=swap');
+
+  /* ----- LIGHT THEME: INDIAN GOVT ALIGNED (BLUE/WHITE/SAFFRON ACCENTS) ----- */
+  :root {
+    --bg-light: #ffffff;
+    --surface-white: #ffffff;
+    --card-bg: #ffffff;
+    --border-light: #e2e8f0;
+    --border-soft: #cbd5e1;
+    --primary-blue: #1e40af;       /* deeper govt blue */
+    --primary-blue-light: #3b82f6;
+    --accent-saffron: #f97316;
+    --text-dark: #0f172a;
+    --text-muted: #475569;
+    --text-soft: #334155;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.03);
+    --glow-blue: rgba(59,130,246,0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.45;
+    padding: 40px 24px 70px;
+  }
+
+  /* header styling — clean, tricolour hint */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  header .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
+    font-size: 11px;
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 40px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  header h1 {
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+
+  header p {
+    color: var(--text-muted);
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 400;
+    border-top: 1px solid #eef2ff;
+    display: inline-block;
+    padding-top: 12px;
+  }
+
+  /* legend - clean spacing */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 42px;
+    background: #f8fafc;
+    padding: 12px 20px;
+    border-radius: 60px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e2edff;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-soft);
+  }
+
+  .leg-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.02);
+  }
+
+  /* flow container — improved vertical spacing */
+  .flow-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* phase block — proper gap between cards */
+  .phase {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 0;
+    margin-bottom: 0;
+  }
+
+  /* spine (left side) */
+  .spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+  }
+
+  .spine-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+    z-index: 2;
+    box-shadow: 0 6px 12px -6px rgba(0,0,0,0.12);
+    transition: transform 0.1s ease;
+  }
+
+  .spine-line {
+    flex: 1;
+    width: 2.5px;
+    background: #d9e6ff;
+    margin-top: 8px;
+    min-height: 32px;
+    border-radius: 2px;
+  }
+
+  .phase:last-child .spine-line {
+    display: none;
+  }
+
+  /* card styles — white, spacious, subtle border */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid #eef2ff;
+    border-radius: 24px;
+    padding: 20px 24px 22px;
+    margin: 0 0 0 12px;
+    position: relative;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(0px);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: #cbdffc;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 24px 24px 0 0;
+    background: var(--pc, #3b82f6);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .card-title {
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+
+  .card-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .phase-tag {
+    font-size: 10px;
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 40px;
+    background: rgba(59,130,246,0.12);
+    color: #1e40af;
+    border: 1px solid rgba(59,130,246,0.25);
+  }
+
+  /* card body grid */
+  .card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 680px) {
+    .card-body {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .phase {
+      grid-template-columns: 40px 1fr;
+    }
+    .card {
+      padding: 18px;
+    }
+  }
+
+  .card-body.wide {
+    grid-template-columns: 1fr;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #3b82f6;
+    margin-bottom: 12px;
+    border-left: 3px solid #3b82f6;
+    padding-left: 8px;
+  }
+
+  /* stakeholder pills — colourful but readable on light bg */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    color: #1e3a8a !important;
+    transition: 0.1s ease;
+  }
+
+  /* force dark text for better contrast, keep original colourful backgrounds as fallback */
+  .pill[style*="background"] {
+    color: #0f172a !important;
+    font-weight: 600;
+  }
+
+  /* steps list */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #2d3a4b;
+    line-height: 1.42;
+  }
+
+  .step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 10px;
+    margin-top: 6px;
+    flex-shrink: 0;
+    background: var(--pc, #3b82f6);
+  }
+
+  /* decision diamond / gate */
+  .decision {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 40px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: #c2410c;
+    font-weight: 600;
+    margin-top: 12px;
+    width: fit-content;
+  }
+
+  /* integrations inside cards (small badges) */
+  .integrations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .integ {
+    font-size: 10.5px;
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f1f5f9;
+    color: #1e3a8a;
+    border: 1px solid #e2e8f0;
+  }
+
+  .integ-icon {
+    font-size: 12px;
+  }
+
+  /* cross-cutting rail (light theme) */
+  .xcut {
+    margin-top: 48px;
+    background: #f9fbfe;
+    border: 1px solid #e2edff;
+    border-radius: 28px;
+    padding: 24px 28px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .xcut-title {
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1e40af;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .xcut-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+
+  .xcut-item {
+    background: white;
+    border: 1px solid #eef2ff;
+    border-radius: 20px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1e293b;
+    transition: 0.1s;
+  }
+
+  .xcut-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* external integrations panel */
+  .integ-panel {
+    margin-top: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .integ-panel-title {
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1e40af;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-align: left;
+    padding-left: 4px;
+  }
+
+  .integ-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  .integ-card {
+    background: white;
+    border: 1px solid #e0edfe;
+    border-radius: 24px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .integ-card:hover {
+    border-color: #b9d0fc;
+    box-shadow: 0 8px 18px -12px rgba(0,0,0,0.08);
+  }
+
+  .integ-card-icon {
+    font-size: 28px;
+  }
+
+  .integ-card-name {
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #1e40af;
+  }
+
+  .integ-card-desc {
+    font-size: 11.5px;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  /* override for any leftover inline styles to maintain readability */
+  .integ-card[style*="border-color"] {
+    border-color: #d9e6ff !important;
+  }
+
+  .integ-card-name[style*="color"] {
+    color: #1e3a8a !important;
+  }
+
+  /* phase-specific variable assignments (light but vivid) */
+  .p1 { --pc: #2563eb; --pg: rgba(37,99,235,0.08); }
+  .p2 { --pc: #0d9488; --pg: rgba(13,148,136,0.08); }
+  .p3 { --pc: #8b5cf6; --pg: rgba(139,92,246,0.08); }
+  .p4 { --pc: #ea580c; --pg: rgba(234,88,12,0.08); }
+  .p5 { --pc: #16a34a; --pg: rgba(22,163,74,0.08); }
+  .p6 { --pc: #0891b2; --pg: rgba(8,145,178,0.08); }
+  .p7 { --pc: #65a30d; --pg: rgba(101,163,13,0.08); }
+  .p8 { --pc: #d97706; --pg: rgba(217,119,6,0.08); }
+  .p9 { --pc: #db2777; --pg: rgba(219,39,119,0.08); }
+  .p10 { --pc: #4f46e5; --pg: rgba(79,70,229,0.08); }
+
+  .phase-block .spine-num {
+    background: var(--pc);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .phase-block .card::before {
+    background: var(--pc);
+  }
+  .phase-block .card {
+    border-color: #eef2ff;
+    background: white;
+  }
+  .phase-block .phase-tag {
+    background: var(--pg);
+    color: var(--pc);
+    border-color: color-mix(in srgb, var(--pc) 30%, #cbd5e1);
+  }
+  .phase-block .step-dot {
+    background: var(--pc);
+  }
+  .phase-block .section-label {
+    color: var(--pc);
+    border-left-color: var(--pc);
+  }
+
+  /* additional spacing & typography improvements */
+  .card-header .card-title {
+    font-size: 18px;
+  }
+
+  .card-subtitle {
+    font-weight: 450;
+  }
+
+  /* add separation between phases */
+  .phase + .phase {
+    margin-top: 8px;
+  }
+
+  /* make sure spine line extends nicely */
+  .spine-line {
+    background: #cbdff5;
+  }
+
+  /* responsive polish */
+  @media (max-width: 520px) {
+    body {
+      padding: 24px 16px 48px;
+    }
+    .card {
+      margin-left: 0;
+    }
+    .spine {
+      padding-top: 12px;
+    }
+    .legend {
+      border-radius: 28px;
+      padding: 8px 16px;
+    }
+    .xcut {
+      padding: 18px;
+    }
+  }
+
+  /* fix inline pill background overrides without losing color pop — but ensure text readable */
+  .pill {
+    background: #eff6ff !important;
+    color: #1e3a8a !important;
+    border: 1px solid #bfdbfe !important;
+  }
+  /* but keep some variety for different stakeholder groups using specific overrides if needed (optional) */
+  .pill[style*="background:rgba(0,212,160"] {
+    background: #d1fae5 !important;
+    color: #065f46 !important;
+    border-color: #a7f3d0 !important;
+  }
+  .pill[style*="background:rgba(168,85,247"] {
+    background: #ede9fe !important;
+    color: #5b21b6 !important;
+    border-color: #c4b5fd !important;
+  }
+  .pill[style*="background:rgba(249,115,22"] {
+    background: #fff3e3 !important;
+    color: #9a3412 !important;
+    border-color: #fed7aa !important;
+  }
+  .pill[style*="background:rgba(245,158,11"] {
+    background: #fffbeb !important;
+    color: #b45309 !important;
+    border-color: #fde68a !important;
+  }
+  .pill[style*="background:rgba(56,189,248"] {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-color: #bae6fd !important;
+  }
+  .pill[style*="background:rgba(79,117,255"] {
+    background: #e0e7ff !important;
+    color: #1e3a8a !important;
+  }
+  .pill[style*="background:rgba(236,72,153"] {
+    background: #fce7f3 !important;
+    color: #be185d !important;
+    border-color: #fbcfe8 !important;
+  }
+
+  /* integrations inside cards style coherent */
+  .integ {
+    background: #f1f4f9 !important;
+    color: #1f3a6b !important;
+    border: 1px solid #dce5f5 !important;
+  }
+  .integ span {
+    color: inherit;
+  }
+
+  /* decision gates */
+  .decision {
+    background: #fffbeb;
+    border-color: #fed7aa;
+    color: #b45309;
+  }
+
+  /* ensure all text contrasts well */
+  a, .step, .card-subtitle, .section-label, .xcut-item {
+    color: var(--text-dark);
+  }
+
+  .card-subtitle, .integ-card-desc {
+    color: #475569;
+  }
+
+  /* final polish */
+  .phase-block .card {
+    transition: all 0.2s ease;
+  }
+  .phase-block .card:hover {
+    transform: translateY(-2px);
+  }
+  .phase-block .spine-num {
+    transition: 0.1s;
+  }
+  .integ-card-name {
+    font-weight: 800;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">NeGD · MeitY · Digital India</div>
+  <h1>UPMS — End-to-End Proposal Lifecycle</h1>
+  <p>Unified (R&amp;D) Project Management System · From Initiation to Closure</p>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div> Ministry / Programme Division</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#0d9488"></div> Principal Investigator (PI)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#8b5cf6"></div> Review / Peer Expert</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#ea580c"></div> Finance / IFD</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#d97706"></div> Admin Head / Secretary</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#0891b2"></div> NITI Aayog / Policy</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#db2777"></div> External Integration</div>
+</div>
+
+<div class="flow-wrapper">
+
+  <!-- PHASE 1 -->
+  <div class="phase phase-block p1">
+    <div class="spine">
+      <div class="spine-num">1</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Call for Proposal</div>
+          <div class="card-subtitle">Programme initiation & publication</div>
+        </div>
+        <div class="phase-tag">Initiation</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">Stakeholders</div>
+          <div class="pills">
+            <span class="pill" style="background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.35);color:#7dd3fc">NITI Aayog</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">System Admin</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Ministry / Dept.</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span>
+           
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Actions</div>
+          <div class="steps">
+            <div class="step"><div class="step-dot"></div>National level dashboard for analytics and visualization for NITI AAYOG</div>
+            <div class="step"><div class="step-dot"></div>Configure workflow for this approval, user mapping etc.</div>
+            <div class="step"><div class="step-dot"></div>Define scheme, scope & funding envelope</div>
+            <div class="step"><div class="step-dot"></div>Set eligibility criteria, timelines & documents required</div>
+            <div class="step"><div class="step-dot"></div>Publish call on portal </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase phase-block p2">
+    <div class="spine">
+      <div class="spine-num">2</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Proposal Submission</div>
+          <div class="card-subtitle">PI applies via unified portal</div>
+        </div>
+        <div class="phase-tag">Submission</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">Stakeholders</div>
+          <div class="pills">
+            <span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Principal Investigator</span>
+            <span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Implementing Agency</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span>
+          </div>
+          <div style="margin-top:10px">
+            <div class="section-label">Integrations</div>
+            <div class="integrations">
+              <span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">🔐</span>DigiLocker SSO</span>
+              <span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">🪪</span>Meri Pehchaan</span>
+              <span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">📄</span>NGO Darpan</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Actions</div>
+          <div class="steps">
+            <div class="step"><div class="step-dot"></div>PI registers / logs in via DigiLocker SSO or Meri Pehchaan</div>
+            <div class="step"><div class="step-dot"></div>Fills proposal: research plan, budget, CVs, team composition</div>
+            <div class="step"><div class="step-dot"></div>Uploads supporting documents (auto-versioned)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase phase-block p3">
+    <div class="spine">
+      <div class="spine-num">3</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Scrutiny & Validation</div>
+          <div class="card-subtitle">Administrative completeness check</div>
+        </div>
+        <div class="phase-tag">Screening</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">Stakeholders</div>
+          <div class="pills">
+            <span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">Scrutiniser</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Officer</span>
+            <span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">PI </span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Actions</div>
+          <div class="steps">
+            <div class="step"><div class="step-dot"></div>Check document completeness, format & eligibility criteria</div>
+            <div class="step"><div class="step-dot"></div>Flag deficiencies; return to PI for correction (with deadline)</div>
+            <div class="step"><div class="step-dot"></div>Re-submission window & re-scrutiny</div>
+            <div class="step"><div class="step-dot"></div>Shortlisted proposals forwarded for peer review</div>
+          </div>
+          <div class="decision">⟢ Decision Gate: Eligible → Peer Review | Rejected → Notification</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase phase-block p4">
+    <div class="spine">
+      <div class="spine-num">4</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Peer Review & Evaluation</div>
+          <div class="card-subtitle">Domain expert scoring & ranking</div>
+        </div>
+        <div class="phase-tag">Evaluation</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="section-label">Stakeholders</div>
+          <div class="pills">
+            <span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">Peer Reviewers / Domain Experts</span>
+            <span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">WG/TEC/APEX Group</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span>
+            <span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Officer</span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Actions</div>
+          <div class="steps">
+            <div class="step"><div class="step-dot"></div>System assigns reviewers </div>
+            <div class="step"><div class="step-dot"></div>Reviewers score on defined criteria; submit feedback</div>
+            <div class="step"><div class="step-dot"></div>Expert committee meeting (virtual/in-person facilitated via portal)</div>
+            <div class="step"><div class="step-dot"></div>Consolidated ranking & recommendations generated</div>
+            <div class="step"><div class="step-dot"></div>Prior comments & minutes recorded in system</div>
+          </div>
+          <div class="decision">⟢ Decision Gate: Recommended → Approval | Not Recommended → Archive</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 to 10 same content as original but with new light styles -->
+  <div class="phase phase-block p5">
+    <div class="spine"><div class="spine-num">5</div><div class="spine-line"></div></div>
+    <div class="card"><div class="card-header"><div><div class="card-title">Multi-Level Approval & Sanction</div><div class="card-subtitle">Financial & administrative authorisation</div></div><div class="phase-tag">Approval</div></div><div class="card-body"><div><div class="section-label">Stakeholders (Sequential)</div><div class="pills"><span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Programme Division</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">IFD</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">Secretary </span></div><div style="margin-top:10px"><div class="section-label">Integrations</div><div class="integrations"><span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">📁</span>e-Office</span></div></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>Programme Division/Officer reviews evaluation recommendations and issue draft Sanction order, MOM & Approval</div><div class="step"><div class="step-dot"></div>IFD concurrence (online/offline)</div><div class="step"><div class="step-dot"></div>Secretary approval (online/offline)</div><div class="step"><div class="step-dot"></div>Sanction order generated with budget allocation</div><div class="step"><div class="step-dot"></div>PI notified; project formally approved</div></div><div class="decision">⟢ Decision Gate: Approved → Fund Release | Returned → Re-evaluation</div></div></div></div></div>
+
+  <!-- PHASE 6,7,8,9,10 - same structure kept intact but all styles updated globally -->
+  <div class="phase phase-block p6"><div class="spine"><div class="spine-num">6</div><div class="spine-line"></div></div><div class="card"><div class="card-header"><div><div class="card-title">Fund Disbursement</div><div class="card-subtitle">Tranche-based financial release</div></div><div class="phase-tag">Finance</div></div><div class="card-body"><div><div class="section-label">Stakeholders</div><div class="pills"><span class="pill" style="background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.35);color:#fb923c">Integrated Finance Division</span><span class="pill" style="background:rgba(6,182,212,0.12);border-color:rgba(6,182,212,0.35);color:#67e8f9">Programme Division</span><span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Principal Investigator</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">PFMS/Treasury</span></div><div style="margin-top:10px"><div class="section-label">Integrations</div><div class="integrations"><span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">💰</span>PFMS</span></div></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>Generate work order with agreed milestones & fund tranches</div><div class="step"><div class="step-dot"></div>First tranche released via PFMS integration</div><div class="step"><div class="step-dot"></div>PI bank account validated; funds transferred</div><div class="step"><div class="step-dot"></div>Utilisation Certificate (UC) tracking enabled</div><div class="step"><div class="step-dot"></div>Subsequent tranches triggered by milestone completion</div></div></div></div></div></div>
+
+  <div class="phase phase-block p7"><div class="spine"><div class="spine-num">7</div><div class="spine-line"></div></div><div class="card"><div class="card-header"><div><div class="card-title">Project Execution & Monitoring</div><div class="card-subtitle">Continuous progress tracking & alerts</div></div><div class="phase-tag">Monitoring</div></div><div class="card-body"><div><div class="section-label">Stakeholders</div><div class="pills"><span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Principal Investigator</span><span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Officer</span><span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span><span class="pill" style="background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.35);color:#7dd3fc">NITI Aayog</span><span class="pill" style="background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.35);color:#fb923c">IFD (Financial)</span><span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">PRSG/TEC/Apex Body</span></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>PI submits periodic physical & financial progress reports</div><div class="step"><div class="step-dot"></div>Milestone completion recorded; deliverables uploaded</div><div class="step"><div class="step-dot"></div>Auto-alerts on delays, deviations & milestone slippages</div><div class="step"><div class="step-dot"></div>Role-based dashboards updated in real-time (KPIs, timelines)</div><div class="step"><div class="step-dot"></div>Programme Officer reviews & approves periodic updates based on recommendations by PRSG/TEC/APEX Group</div><div class="step"><div class="step-dot"></div>UC verification before next tranche release</div></div></div></div></div></div>
+
+  <div class="phase phase-block p8"><div class="spine"><div class="spine-num">8</div><div class="spine-line"></div></div><div class="card"><div class="card-header"><div><div class="card-title">Review & Mid-Course Correction</div><div class="card-subtitle">Periodic evaluation & corrective action</div></div><div class="phase-tag">Governance</div></div><div class="card-body"><div><div class="section-label">Stakeholders</div><div class="pills"><span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">Domain Reviewers</span><span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">Admin Head</span><span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">PI</span></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>Periodic review committee meeting convened</div><div class="step"><div class="step-dot"></div>Exception & risk reports surfaced from analytics</div><div class="step"><div class="step-dot"></div>Scope / budget / timeline revisions approved if needed</div><div class="step"><div class="step-dot"></div>Resource reallocation or extension requests processed</div></div><div class="decision">⟢ Decision Gate: On-track → Continue | At-risk → Escalation / Corrective Action</div></div></div></div></div>
+
+  <div class="phase phase-block p9"><div class="spine"><div class="spine-num">9</div><div class="spine-line"></div></div><div class="card"><div class="card-header"><div><div class="card-title">Project Closure</div><div class="card-subtitle">Final deliverables & closure approval</div></div><div class="phase-tag">Closure</div></div><div class="card-body"><div><div class="section-label">Stakeholders</div><div class="pills"><span class="pill" style="background:rgba(0,212,160,0.12);border-color:rgba(0,212,160,0.35);color:#34d399">Principal Investigator</span><span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span><span class="pill" style="background:rgba(249,115,22,0.12);border-color:rgba(249,115,22,0.35);color:#fb923c">IFD (Final UC)</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">Admin Head / Secretary</span><span class="pill" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.35);color:#c084fc">PRSG/TEC/Apex Body</span></div><div style="margin-top:10px"><div class="section-label">Integrations</div><div class="integrations"><span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">💰</span>PFMS (Final UC)</span><span class="integ" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);color:#f472b6"><span class="integ-icon">📁</span>e-Office</span></div></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>PI submits completion report & final deliverables</div><div class="step"><div class="step-dot"></div>Physical & financial completion validated</div><div class="step"><div class="step-dot"></div>Final utilisation certificate cleared via PFMS</div><div class="step"><div class="step-dot"></div>Closure meeting & PRSG/TEC/Apex recommendation</div><div class="step"><div class="step-dot"></div>Secretary / Admin Head issues formal closure approval</div></div></div></div></div></div>
+
+  <div class="phase phase-block p10"><div class="spine"><div class="spine-num">10</div><div class="spine-line"></div></div><div class="card"><div class="card-header"><div><div class="card-title">Post-Closure & Impact Assessment</div><div class="card-subtitle">Analytics, knowledge archival & policy insights</div></div><div class="phase-tag">Post-Closure</div></div><div class="card-body"><div><div class="section-label">Stakeholders</div><div class="pills"><span class="pill" style="background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.35);color:#7dd3fc">NITI Aayog</span><span class="pill" style="background:rgba(99,102,241,0.12);border-color:rgba(99,102,241,0.35);color:#a5b4fc">MeitY / NeGD</span><span class="pill" style="background:rgba(79,117,255,0.12);border-color:rgba(79,117,255,0.35);color:#7fa3ff">Programme Division</span><span class="pill" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#fbbf24">PRSG / Apex Body</span></div></div><div><div class="section-label">Actions</div><div class="steps"><div class="step"><div class="step-dot"></div>Outcome tracking: publications, patents, tech transfer, impact</div><div class="step"><div class="step-dot"></div>AI-driven analytics: trend analysis & policy recommendations</div><div class="step"><div class="step-dot"></div>Data archived in knowledge repository (accessible to policymakers)</div><div class="step"><div class="step-dot"></div>National R&D dashboard updated with outcomes</div><div class="step"><div class="step-dot"></div>Lessons learnt captured to improve future calls</div></div></div></div></div></div>
+
+</div>
+
+<!-- CROSS-CUTTING CAPABILITIES -->
+<div class="xcut">
+  <div class="xcut-title">⚡ Cross-Cutting Platform Capabilities (Active Across All Phases)</div>
+  <div class="xcut-grid">
+    <div class="xcut-item"><span class="xcut-icon">📊</span>Role-Based Dashboards & MIS</div>
+    <div class="xcut-item"><span class="xcut-icon">🔔</span>Alerts & Notifications (Email / SMS)</div>
+    <div class="xcut-item"><span class="xcut-icon">📁</span>Document Management & Versioning</div>
+    <div class="xcut-item"><span class="xcut-icon">🔏</span>Audit Trail & Compliance Logs</div>
+    <div class="xcut-item"><span class="xcut-icon">🛡️</span>RBAC & Multi-factor Authentication</div>
+    <div class="xcut-item"><span class="xcut-icon">🤖</span>AI Analytics & Predictive Alerts</div>
+    <div class="xcut-item"><span class="xcut-icon">🔄</span>Configurable BPM Workflow Engine</div>
+    <div class="xcut-item"><span class="xcut-icon">☁️</span>MeitY Cloud · Containerised Infra</div>
+    <div class="xcut-item"><span class="xcut-icon">🔗</span>Open API Gateway & Interoperability</div>
+    <div class="xcut-item"><span class="xcut-icon">📱</span>Web + Mobile + PWA Access</div>
+    <div class="xcut-item"><span class="xcut-icon">🌐</span>Multilingual UI (GIGW 3.0 / WCAG 2.1)</div>
+    <div class="xcut-item"><span class="xcut-icon">🔒</span>CERT-In / OWASP Security Compliance</div>
+  </div>
+</div>
+
+<!-- EXTERNAL INTEGRATIONS PANEL -->
+<div class="integ-panel">
+  <div class="integ-panel-title">🔌 External System Integrations</div>
+  <div class="integ-cards">
+    <div class="integ-card"><div class="integ-card-icon">💰</div><div class="integ-card-name">PFMS</div><div class="integ-card-desc">Public Financial Management System — fund release, tranche tracking, utilisation certificate validation</div></div>
+    <div class="integ-card"><div class="integ-card-icon">🔐</div><div class="integ-card-name">DigiLocker SSO</div><div class="integ-card-desc">Secure single sign-on & document vault for PI authentication and credential verification</div></div>
+    <div class="integ-card"><div class="integ-card-icon">🪪</div><div class="integ-card-name">Meri Pehchaan</div><div class="integ-card-desc">National Single Sign-On (NSSO) for unified identity management across government portals</div></div>
+    <div class="integ-card"><div class="integ-card-icon">📁</div><div class="integ-card-name">e-Office</div><div class="integ-card-desc">Digital file movement for IFD concurrence, approvals & official correspondence during sanction workflow</div></div>
+    <div class="integ-card"><div class="integ-card-icon">🏢</div><div class="integ-card-name">NGO Darpan</div><div class="integ-card-desc">Validation of implementing agencies / institutions at proposal submission stage</div></div>
+    <div class="integ-card"><div class="integ-card-icon">🔗</div><div class="integ-card-name">Open APIs</div><div class="integ-card-desc">REST APIs for data exchange, interoperability with departmental systems & future platform integrations</div></div>
+  </div>
+</div>
+
+</body>
+</html>
